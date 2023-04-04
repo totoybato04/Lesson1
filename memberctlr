@@ -1,0 +1,104 @@
+var Member  = require('./models/member')
+var _ = require('lodash')
+
+function memberctlr() {
+
+    this.addMember = function (body, res) {
+
+        var newM = {member_id:body.member_id,
+                    fname:body.fname, lname:body.lname,
+                    mname:body.mname}
+
+        var newmember = Member(newM)
+        newmember.save((err, result)=>{
+            res.send("Success!");
+        });   
+        };
+    
+        this.getMember = function(id, res) {
+          Member.find({ member_id: id }).exec(function(err, results) {
+            if (err) {
+              res.status(500).send(err);
+            } else {
+              if (results.length > 0) {
+                res.send(results);
+              } else {
+                res.status(404).send("Members not found.");
+              }
+            }
+          });
+        }
+    this.deleteMember = function (id, res) {
+      Member.findOneAndDelete({ member_id: id }).exec(function (err, result) {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          if (result && result.fname) {
+            res.send("Success!");
+          } else {
+            res.status(404).send("Member not found.");
+          }
+        }
+      });
+    }
+    this.updateMember = function (body, res) {
+      var member_id = body.member_id;
+      var update = {
+        member_id: member_id,
+        fname: body.fname,
+        lname: body.lname,
+        mname: body.mname
+      };
+      var options = { upsert: true, new: true };
+      Member.findOneAndUpdate({ member_id: member_id }, update, options)
+        .exec(function(err, result) {
+          if (err) {
+            res.status(500).send(err);
+          } else {
+            res.send("Success!");
+          }
+        });
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+   //  this.updateMember = function (id, body, res) {
+   //    Member.findOneAndUpdate(
+   //      { member_id: String(id) },
+   //      { 
+   //        fname: body.fname,
+   //        lname: body.lname,
+   //        mname: body.mname
+   //      },
+   //      { new: true },
+   //      function (err, result) {
+   //        if (err) {
+   //          res.status(500).send(err);
+   //        } else {
+   //          if (result && result.fname) {
+   //            res.send("Success!");
+   //          } else {
+   //            res.status(404).send("Member not found.");
+   //          }
+   //        }
+   //      }
+   //    ); 
+   //  }
+    
+    
+
+   }
+
+
+module.exports = new memberctlr()
